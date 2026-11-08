@@ -7,7 +7,7 @@ Siebtes Stück der Konzepte-Reihe **„Umstauen: Untergrenze und Suche“** für
 
 ## Warum dieses Problem
 
-Ein Modell lässt sich leicht hinschreiben und einem Löser übergeben; die Frage ist, wie weit es trägt. Hier trägt es nicht weit, **obwohl es korrekt ist und die LP-Schranke gut ist**. Die Gründe sind die **Größe** (Variablen wachsen mit *N*² · *W*² · *H*²) und ein **schwerer Schwanz** weniger schwieriger Buchten. Die Suche aus Stück 5 und 6 löst dieselben Buchten in Millisekunden und trägt bis 32 Container. Die Hypothese der Gliederung („das ILP bricht bei deutlich kleinerer Blockzahl ein als die Suche“) trifft **der Richtung nach** zu; die Zahlen der Literatur (30 gegen 70) werden nicht reproduziert.
+Ein Modell lässt sich leicht hinschreiben und einem Löser übergeben; die Frage ist, wie weit es trägt. Hier trägt es nicht weit, **obwohl es korrekt ist und die LP-Schranke bis 12 Container (4 × 3) gut ist** (bei 3 × 4 bleibt eine Lücke von im Median 1). Die Gründe sind die **Größe** (Variablen wachsen mit *N*² · *W*² · *H*²) und ein **schwerer Schwanz** weniger schwieriger Buchten. Die Suche aus Stück 5 und 6 löst dieselben Buchten in Millisekunden und trägt bis 32 Container. Die Hypothese der Gliederung („das ILP bricht bei deutlich kleinerer Blockzahl ein als die Suche“) trifft **der Richtung nach** zu; die Zahlen der Literatur (30 gegen 70) werden nicht reproduziert.
 
 ## Modell
 
@@ -44,7 +44,7 @@ Alle Zahlen sind Messungen an den festen Buchten 0 bis (Zahl der Buchten − 1) 
 | 5 × 3 (15), 8 | 55 500 | 13 335 | **7 / 8** | 11,4 s / 60,9 s | 0,4 ms / 1,7 ms |
 | 4 × 4 (16), 6 | 55 104 | 13 380 | **5 / 6** | 33,2 s / 60,8 s | 5,0 ms / 26 ms |
 
-In allen 105 bewiesenen Läufen stimmt das ILP-Optimum mit der Suche überein (0 falsche Werte). „Nicht fertig“ heißt: Status Zeitlimit, kein Beweis. Die Zeiten nicht fertiger Läufe liegen leicht über dem Limit (HiGHS überschreitet es).
+In allen 105 bewiesenen Läufen stimmt das ILP-Optimum mit der Suche überein (0 falsche Werte). „Nicht fertig“ heißt: Status Zeitlimit, kein Beweis. Die Zeiten nicht fertiger Läufe liegen über dem Limit (HiGHS überschreitet es; in der gespeicherten Messung bei unbelasteter Maschine um bis zu 2 %, unter Last deutlich mehr).
 
 **B: Warum? LP-Relaxation und Zeit** (Median über die Buchten der Zelle; LP-Wert = Integralität aufgehoben)
 
@@ -98,19 +98,19 @@ In allen 105 bewiesenen Läufen stimmt das ILP-Optimum mit der Suche überein (0
 
 | Frage | Befund |
 |---|---|
-| **Ist das Modell korrekt?** | Ja, in allen geprüften Fällen: das ILP-Optimum gleicht dem der Breitensuche und der Suche in 200 von 200 Buchten (alle 3 × 2, 60 × 4 × 2, 40 × 3 × 3); jede Lösung wird mit einem eigenen Simulator nach den Regeln nachgespielt; die optimale Hubfolge der Breitensuche ist ein zulässiger Punkt des Modells (Zertifikat). Mini-Bucht und Gegenbeispiel aus Stück 1: Optimum 2 und 4 bei **1 692 Variablen und 1 020 Zeilen** (dasselbe Modell, gleiche *N*, *W*, *H*). |
+| **Ist das Modell korrekt?** | Ja, in allen geprüften Fällen: das ILP-Optimum gleicht dem der Breitensuche und der Suche in 220 von 220 Buchten (alle 120 3 × 2-Buchten bis auf Stapelvertauschen, 60 × 4 × 2, 40 × 3 × 3); jede Lösung wird mit einem eigenen Simulator nach den Regeln nachgespielt; die optimale Hubfolge der Breitensuche ist ein zulässiger Punkt des Modells (Zertifikat). Mini-Bucht und Gegenbeispiel aus Stück 1: Optimum 2 und 4 bei **1 692 Variablen und 1 020 Zeilen** (dasselbe Modell, gleiche *N*, *W*, *H*). |
 | **Wie wächst das Modell?** | Von 1 692 Variablen (6 Container) über 6 075 (9), 21 360 (12, 4 × 3) auf rund **55 000 bei 15 bis 16 Containern**; das Wachstum folgt *N*² · *W*² · *H*² (die Formel stimmt mit dem gebauten Modell in jeder Zelle überein). |
-| **Wo bricht das ILP ein?** | Im Median von 0,04 s (6 Container) über 0,21 s (9) und 1,4 bis 2,5 s (12) auf 11 s (15) und 33 s (16). **Zuverlässig fertig** in 60 s sind alle Zellen bis 10 Container; ab **12 Containern** bleibt je Zelle bis zu eine Bucht ohne Beweis (4 × 3: 1 von 12, 5 × 3: 1 von 8, 4 × 4: 1 von 6). Der **Schwanz** ist schwer: das Maximum liegt bei 4 × 3 beim 43-Fachen des Medians. |
-| **Und die Suche?** | Dieselben Buchten in höchstens 26 ms (Median höchstens 5 ms). Sie trägt bis **32 Container mit 16 bis 17 Blockern** (Median höchstens 1,4 s), bei 6 × 4 und 6 × 5 liegt je eine Bucht über einer Million Knoten. Die **Grenze der Suche ist nicht gefunden.** Das ILP bricht bei **einem Drittel bis der Hälfte** der Containerzahl ein, bei der die Suche noch trägt (rund 12 bis 16 gegen 30 und mehr). |
-| **Ist die LP-Schranke schwach?** | Nein: Der LP-Wert liegt im Median **auf dem Optimum** (3 × 2 bis 5 × 2), bei 4 × 3 bei 5,5 gegen 6, bei 3 × 4 bei 8,5 gegen 9,5; Optimum minus LP-Wert im Median 0 (3 × 4: 1), höchstens 4. Die Untergrenze aus Stück 2 liegt darunter (Median 3,5 bei 3 × 3, 4 bei 4 × 3, 6 bei 3 × 4). |
-| **Wo steckt die Zeit?** | Das Wurzel-LP kostet **5 bis 28 %** der ILP-Zeit (28 % bei 3 × 3, sonst 5 bis 6 %); der Rest ist Verzweigung auf den Buchten, deren LP-Lösung gebrochen ist, und die Größe des LP. |
-| **Hängt das vom Löser ab?** | CP-SAT ist auf diesem Modell insgesamt das **1,8- bis 3,7-Fache** schneller als HiGHS und beweist in zwei Zellen eine Bucht mehr. Die Skalierung ist dieselbe: Die Lage der Grenze hängt etwas vom Löser ab, das Einbrechen nicht. |
+| **Wo bricht das ILP ein?** | Im Median von 0,04 s (6 Container) über 0,21 s (9) und 1,4 bis 2,5 s (12) auf 11 s (15) und 33 s (16). **Zuverlässig fertig** in 60 s sind alle Zellen bis 10 Container; ab **12 Containern** bleiben je Zelle ein bis drei Buchten ohne Beweis (je nach Messlauf und Rechnerlast; 4 × 3: ein bis zwei von 12, 5 × 3: ein bis drei von 8, 4 × 4: ein bis drei von 6). Der **Schwanz** ist schwer: das Maximum liegt bei 4 × 3 beim 43-Fachen des Medians. |
+| **Und die Suche?** | Dieselben Buchten in höchstens 26 ms (Median höchstens 5 ms). Sie trägt bis **32 Container mit 16 bis 17 Blockern** (Median höchstens 1,4 s), bei 6 × 4 und 6 × 5 liegt je eine Bucht über einer Million Knoten. Die **Grenze der Suche ist nicht gefunden.** Das ILP lässt ab **12 Containern** je Zelle Buchten ohne Beweis in 60 s; bei der Suche tritt das erst ab **24 Containern** auf (je eine Bucht über einer Million Knoten). Die Suche trägt also **mindestens etwa doppelt so weit**; ihre Grenze ist nicht gefunden. |
+| **Ist die LP-Schranke schwach?** | Bis 12 Container (4 × 3) nein, bei 3 × 4 bleibt eine Lücke von im Median 1: Der LP-Wert liegt im Median **auf dem Optimum** (3 × 2 bis 5 × 2), bei 4 × 3 bei 5,5 gegen 6, bei 3 × 4 bei 8,5 gegen 9,5; Optimum minus LP-Wert im Median 0 (3 × 4: 1), höchstens 4. Die Untergrenze aus Stück 2 liegt darunter (Median 3,5 bei 3 × 3, 4 bei 4 × 3, 6 bei 3 × 4). |
+| **Wo steckt die Zeit?** | Das Wurzel-LP kostet **5 bis 9 %** der ILP-Zeit (bei 3 × 3 bis 28 %, je nach Lauf); wie sich der Rest auf Verzweigung, Presolve und Heuristiken verteilt, ist nicht gemessen. |
+| **Hängt das vom Löser ab?** | CP-SAT ist auf diesem Modell in allen vier Zellen schneller (**1,4- bis 3,7-Fache** je Lauf) und beweist in zwei Zellen eine Bucht mehr. Bis 15 Container sieht die Skalierung ähnlich aus (CP-SAT nur dort gerechnet, ein Worker): Die Lage der Grenze hängt etwas vom Löser ab. |
 | **Braucht das Modell die Korrektur?** | Ja: Mit der Originalfassung (6) sind bei 3 × 3 **12 von 100** Buchten unlösbar und **13** haben einen anderen Wert, bei 3 × 4 15 von 20; bei 3 × 2 und 4 × 2 macht sie keinen Unterschied. Ein Beispiel mit drei Blockern über der 1 ((1, 6, 7, 8), (2, 3), (4, 5), Höchsthöhe 4): Korrektur Optimum 8, Originalfassung unlösbar. |
 | **Die Mini-Bucht** | (1, 4), (5, 2), (6, 3), Höchsthöhe 4: Das Modell hat 1 692 Variablen, 1 020 Zeilen und 11 700 Nichtnullen, der LP-Wert ist 2, das Optimum 2: Die 4 blockiert die 1 und wird zweimal umgelagert (einmal in Periode 1, einmal später). Die Suche braucht 6 Knoten. |
 
 **Presets** (Eigenschaften in `tests/test_presets.py`): „Alltag“ (3 × 3, Bucht 12: 6 075 Variablen, ILP beweist 5 in einem Sekundenbruchteil, Suche 11 Knoten), „Die Mini-Bucht“ (3 × 2, Bucht 223), „Das ILP wird langsam“ (3 × 4, Bucht 4, Zeitlimit 30 s: ILP rund 4 bis 5 s, Suche wenige ms, Optimum 13), „Das ILP gibt auf“ (4 × 3, Bucht 0, Zeitlimit 5 s: ILP findet keinen Beweis, braucht über 50 s; Optimum 10 durch die Suche; die Berechnung dauert rund 7 Sekunden), „Die Suche trägt weiter“ (5 × 4, Bucht 2: Modell mit 143 100 Variablen nicht gerechnet, Suche 31 Knoten, Optimum 9).
 
-**Korrektur gegenüber dem Plan:** Der Plan nannte „in 60 s nicht fertig: 1 von 12 (4 × 3), 2 von 8 (5 × 3), 3 von 6 (4 × 4)“ aus der Vormessung; der gespeicherte Messlauf der Demo liefert 1, 1 und 1 (HiGHS ist von Lauf zu Lauf unterschiedlich schnell). CP-SAT ist 1,8- bis 3,7-fach schneller (Plan: 1,5- bis 3-fach). Die Originalfassung (6) liefert bei 3 × 3 in 25 von 100 Buchten ein falsches Ergebnis (in den ersten 60 sind es 13). Die Zeiten der Suche bei 6 × 4 (Maximum 1,69 s) und 6 × 5 (6,26 s) liegen unter den Vormesswerten (26,2 und 21,8 s), die unter Last entstanden. **Die Kernaussage (korrekt, aber Größe und Schwanz; die Suche trägt um das Zwei- bis Dreifache weiter) trägt in beiden Läufen.**
+**Korrektur gegenüber dem Plan:** Der Plan nannte „in 60 s nicht fertig: 1 von 12 (4 × 3), 2 von 8 (5 × 3), 3 von 6 (4 × 4)“ aus der Vormessung; der gespeicherte Messlauf der Demo liefert 1, 1 und 1 (HiGHS ist von Lauf zu Lauf unterschiedlich schnell). CP-SAT ist 1,8- bis 3,7-fach schneller (Plan: 1,5- bis 3-fach). Die Originalfassung (6) liefert bei 3 × 3 in 25 von 100 Buchten ein falsches Ergebnis (in den ersten 60 sind es 13). Die Zeiten der Suche bei 6 × 4 (Maximum 1,69 s) und 6 × 5 (6,26 s) liegen unter den Vormesswerten (26,2 und 21,8 s), die unter Last entstanden. **Die Kernaussage (korrekt, aber Größe und Schwanz; die Suche trägt mindestens etwa doppelt so weit) trägt in beiden Läufen.**
 
 ## Ehrliche Grenzen
 
@@ -181,7 +181,7 @@ pip install -r requirements-dev.txt
 pytest tests/ -v
 ```
 
-145 Tests, rund zwei bis drei Minuten (das ILP wird live gerechnet).
+145 Tests, rund 270 Sekunden (eine Messung unter Windows; das ILP wird live gerechnet).
 
 Gebaut mit Streamlit, Plotly, SciPy (HiGHS).
 

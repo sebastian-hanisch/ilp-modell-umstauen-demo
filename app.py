@@ -3,7 +3,7 @@ Sebastian Hanisch - Operations Research und Machine Learning
 
 Stück 7 der Reihe „Umstauen: Untergrenze und Suche“. Stück 4 bis 6 haben die Suche gebaut. Hier das ganzzahlige lineare Programm für dieselbe Aufgabe: ein zeitindiziertes Modell
 (korrigiertes BRP-II nach Eskandari und Azari), das HiGHS exakt löst. Die Demo rechnet es live auf kleinen Buchten, zeigt die Lösung als Umlagerungsfolge, misst vorberechnet,
-wo es einbricht (Größe, Zeit, Schwanz), warum (LP-Schranke gut, Modell groß) und wo die Suche noch trägt.
+wo es einbricht (Größe, Zeit, Schwanz), warum (Modell groß, schwerer Schwanz, LP-Schranke bis 12 Container gut) und wo die Suche noch trägt.
 
 Lauffähig mit: streamlit run app.py
 """
