@@ -167,7 +167,7 @@ class IlpResult:
 def lp_value(model: Model) -> tuple[float | None, float]:
     """(Wert der LP-Relaxation, Sekunden). None, wenn das LP nicht lösbar ist."""
     t0 = time.perf_counter()
-    res = milp(model.c, constraints=LinearConstraint(model.a, model.lo, model.hi), integrality=np.zeros_like(model.c), bounds=Bounds(model.lb, model.ub), options={"disp": False})
+    res = milp(model.c, constraints=LinearConstraint(model.a, model.lo, model.hi), integrality=np.zeros_like(model.c), bounds=Bounds(model.lb, model.ub), options={"mip_rel_gap": 0.0, "disp": False})
     return (float(res.fun) if res.status == 0 else None), time.perf_counter() - t0
 
 
@@ -190,7 +190,7 @@ def solve(bay, height: int, time_limit: float = 60.0, lifo: str = "corrected", w
     lpv, lps = lp_value(model) if with_lp else (None, None)
     t2 = time.perf_counter()
     res = milp(model.c, constraints=LinearConstraint(model.a, model.lo, model.hi), integrality=np.ones_like(model.c), bounds=Bounds(model.lb, model.ub),
-               options={"time_limit": float(time_limit), "disp": False})
+               options={"mip_rel_gap": 0.0, "time_limit": float(time_limit), "disp": False})
     t3 = time.perf_counter()
     status = {0: "optimal", 1: "time_limit", 2: "infeasible"}.get(res.status, "error")
     best = int(round(res.fun)) if res.x is not None and res.status in (0, 1) else None
